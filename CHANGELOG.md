@@ -2,6 +2,15 @@
 
 ---
 
+## [1.0.1] — 2026-05-05
+
+### Fixed
+
+- `README.md` — corrected suite position from "fifth" to "fourth"
+- `CHANGELOG.md` — corrected suite position from "fifth" to "fourth"
+
+---
+
 ## [1.0.0] — 2026-05-05
 
 ### Added
@@ -28,4 +37,4 @@
 
 ---
 
-*SportMind/intelligence-agent — fifth repository in the SportMind suite*
+*SportMind/intelligence-agent — fourth repository in the SportMind suite*

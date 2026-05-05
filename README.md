@@ -1,6 +1,6 @@
 # intelligence-agent
 
-> The fifth repository in the SportMind suite. Monitors, classifies, and delivers structured intelligence briefings. You decide what enters the library.
+> The fourth repository in the SportMind suite. Monitors, classifies, and delivers structured intelligence briefings. You decide what enters the library.
 
 ---
 
