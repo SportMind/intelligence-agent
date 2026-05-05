@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="system">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SportMind / intelligence-agent — Structured briefings for the SportMind library</title>
+<meta name="description" content="Monitors public sources. Classifies signals. Delivers reasoned briefings. You decide what gets added to the library.">
+<meta property="og:title" content="SportMind / intelligence-agent">
+<meta property="og:description" content="Monitors public sources. Classifies signals. Delivers reasoned briefings.">
+<meta property="og:url" content="https://sportmind.github.io/intelligence-agent">
+<link rel="canonical" href="https://sportmind.github.io/intelligence-agent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ── TOKENS ─────────────────────────────────────────────────────── */
+:root {
+  --sans: 'Geist', system-ui, sans-serif;
+  --mono: 'Geist Mono', monospace;
+
+  --bg:       #ffffff;
+  --bg-2:     #f9f9f8;
+  --bg-3:     #f2f2f0;
+  --border:   #e8e8e4;
+  --text:     #111110;
+  --text-2:   #6f6e69;
+  --text-3:   #b0afa8;
+  --accent:   #16663a;
+  --accent-h: #0f4f2c;
+  --green-bg: rgba(22,102,58,0.07);
+  --btn-text: #ffffff;
+}
+
+[data-r="dark"] {
+  --bg:       #111110;
+  --bg-2:     #191918;
+  --bg-3:     #222220;
+  --border:   #2e2e2b;
+  --text:     #eeede8;
+  --text-2:   #908e85;
+  --text-3:   #5a5950;
+  --accent:   #4ade80;
+  --accent-h: #6aee98;
+  --green-bg: rgba(74,222,128,0.08);
+  --btn-text: #0a2e1a;
+}
+
+/* ── RESET ──────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  transition: background .2s, color .2s;
+}
+a { color: inherit; text-decoration: none; }
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.w  { max-width: 640px;  margin: 0 auto; padding: 0 24px; }
+.ww { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+
+/* ── NAV ────────────────────────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.nav-i {
+  max-width: 1000px; margin: 0 auto; padding: 0 24px;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-r { display: flex; align-items: center; gap: 4px; }
+.logo {
+  font-family: var(--mono);
+  font-size: 14px; font-weight: 500;
+  color: var(--text); letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-dot {
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: blink 2.5s ease-in-out infinite;
+}
+.logo-sep { color: var(--text-3); font-weight: 300; margin: 0 2px; }
+.logo-sub { color: var(--text-2); font-weight: 400; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.nav-a {
+  font-size: 13px; color: var(--text-2);
+  height: 32px; padding: 0 12px;
+  display: inline-flex; align-items: center;
+  border-radius: 5px;
+  transition: color .15s, background .15s;
+}
+.nav-a:hover { color: var(--text); background: var(--bg-2); }
+.nav-gh {
+  font-family: var(--mono);
+  font-size: 12px; color: var(--accent);
+  border: 1px solid var(--border);
+  height: 32px; padding: 0 14px;
+  display: inline-flex; align-items: center;
+  border-radius: 5px;
+  transition: border-color .15s, background .15s;
+}
+.nav-gh:hover { border-color: var(--accent); background: var(--green-bg); }
+.th {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-3);
+  width: 34px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 5px; cursor: pointer; font-size: 13px;
+  transition: color .15s, border-color .15s;
+  outline: none;
+}
+.th:hover { color: var(--text-2); border-color: var(--text-3); }
+
+/* ── HERO ───────────────────────────────────────────────────────── */
+.hero { padding: 120px 0 96px; text-align: center; }
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-3); letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 40px;
+}
+.badge-dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+h1 {
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  margin-bottom: 28px;
+}
+h1 strong { font-weight: 500; }
+.sub {
+  font-size: 17px; font-weight: 300;
+  color: var(--text-2); line-height: 1.75;
+  max-width: 480px;
+  margin: 0 auto 48px;
+}
+.btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.btn-p {
+  font-family: var(--mono); font-size: 13px; font-weight: 500;
+  background: var(--accent); color: var(--btn-text);
+  padding: 11px 24px; border-radius: 6px;
+  border: 1px solid var(--accent);
+  transition: opacity .15s;
+}
+.btn-p:hover { opacity: .85; }
+.btn-s {
+  font-family: var(--mono); font-size: 13px;
+  color: var(--text-2); border: 1px solid var(--border);
+  padding: 11px 24px; border-radius: 6px;
+  transition: color .15s, border-color .15s;
+}
+.btn-s:hover { color: var(--text); border-color: var(--text-3); }
+
+/* ── STATS ──────────────────────────────────────────────────────── */
+.stats {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 0;
+}
+.stats-g {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+}
+.stat {
+  text-align: center; padding: 0 20px;
+  border-right: 1px solid var(--border);
+}
+.stat:last-child { border-right: none; }
+.stat-n {
+  font-family: var(--mono);
+  font-size: 32px; font-weight: 500;
+  letter-spacing: -0.04em;
+  color: var(--text); line-height: 1; margin-bottom: 6px;
+}
+.stat-l { font-size: 13px; color: var(--text-3); letter-spacing: .02em; }
+
+/* ── SECTION COMMON ─────────────────────────────────────────────── */
+.sec { padding: 96px 0; border-bottom: 1px solid var(--border); }
+.sec-tag {
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: .14em;
+  color: var(--text-3); margin-bottom: 24px;
+}
+h2 {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 400; letter-spacing: -0.03em;
+  line-height: 1.2; margin-bottom: 16px;
+}
+.prose {
+  font-size: 17px; font-weight: 300;
+  color: var(--text-2); line-height: 1.8;
+}
+
+/* ── PIPELINE ───────────────────────────────────────────────────── */
+.pipeline {
+  margin-top: 48px;
+  display: flex; flex-direction: column;
+}
+.pipe-step {
+  display: grid; grid-template-columns: 28px 160px 1fr;
+  gap: 24px; align-items: baseline;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.pipe-step:first-child { border-top: 1px solid var(--border); }
+.pipe-step:last-child { border-bottom: none; }
+.pipe-n {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-3);
+}
+.pipe-name {
+  font-size: 14px; font-weight: 500;
+  color: var(--text);
+  display: flex; align-items: center; gap: 10px;
+}
+.pipe-arrow {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--accent);
+}
+.pipe-desc { font-size: 15px; color: var(--text-2); line-height: 1.65; }
+
+/* ── SOURCES ────────────────────────────────────────────────────── */
+.src-grid {
+  margin-top: 48px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  background: var(--border);
+}
+.src-card {
+  background: var(--bg);
+  padding: 28px 28px 24px;
+}
+.src-cat {
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--accent); margin-bottom: 10px;
+}
+.src-title {
+  font-size: 15px; font-weight: 500;
+  color: var(--text); margin-bottom: 12px;
+}
+.src-examples {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.src-ex {
+  font-size: 13px; color: var(--text-3);
+  font-family: var(--mono);
+  display: flex; align-items: baseline; gap: 8px;
+}
+.src-ex::before {
+  content: '·';
+  color: var(--border);
+  flex-shrink: 0;
+}
+
+/* ── BRIEFING FORMAT ────────────────────────────────────────────── */
+.briefing-box {
+  margin-top: 48px;
+  border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+.briefing-bar {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.briefing-bar-l { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+.briefing-bar-r {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--accent); background: var(--green-bg);
+  padding: 3px 10px; border-radius: 4px;
+}
+.briefing-body { background: var(--bg-2); }
+.bf-row {
+  display: grid; grid-template-columns: 160px 1fr;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
+.bf-row:last-child { border-bottom: none; }
+.bf-label {
+  font-family: var(--mono); font-size: 11px;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text-3);
+  padding: 16px 20px;
+  border-right: 1px solid var(--border);
+  background: var(--bg-3);
+  display: flex; align-items: flex-start;
+}
+.bf-val {
+  font-size: 13px; color: var(--text-2);
+  padding: 16px 20px; line-height: 1.7;
+}
+.bf-val .accent { color: var(--accent); font-family: var(--mono); font-size: 12px; }
+.bf-val .strong { font-weight: 500; color: var(--text); }
+.bf-val .file { font-family: var(--mono); font-size: 12px; color: var(--text-3); }
+.briefing-foot {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 11px; color: var(--text-3);
+}
+
+/* ── DELIVERY ───────────────────────────────────────────────────── */
+.delivery-g {
+  margin-top: 48px;
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 16px;
+}
+.del-card {
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 28px 24px;
+  position: relative;
+  transition: border-color .15s;
+}
+.del-card:hover { border-color: var(--text-3); }
+.del-card.recommended {
+  border-color: var(--accent);
+  background: var(--green-bg);
+}
+.del-badge {
+  position: absolute; top: -1px; right: 20px;
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: .1em;
+  background: var(--accent); color: var(--btn-text);
+  padding: 3px 10px; border-radius: 0 0 5px 5px;
+}
+.del-icon {
+  font-size: 20px; margin-bottom: 16px;
+  display: block;
+}
+.del-name {
+  font-size: 15px; font-weight: 500;
+  color: var(--text); margin-bottom: 8px;
+}
+.del-desc {
+  font-size: 14px; color: var(--text-2);
+  line-height: 1.65; margin-bottom: 16px;
+}
+.del-detail {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ── SUITE ──────────────────────────────────────────────────────── */
+.suite-g {
+  margin-top: 48px;
+  display: grid; grid-template-columns: repeat(4,1fr);
+  gap: 16px;
+}
+.suite-card {
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 24px;
+  transition: border-color .15s;
+}
+.suite-card:hover { border-color: var(--text-3); }
+.suite-card.current {
+  border-color: var(--accent);
+  background: var(--green-bg);
+}
+.suite-n {
+  font-family: var(--mono); font-size: 10px;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--text-3); margin-bottom: 10px;
+}
+.suite-name {
+  font-size: 13px; font-weight: 500;
+  color: var(--text); margin-bottom: 6px;
+  font-family: var(--mono);
+}
+.suite-desc {
+  font-size: 13px; color: var(--text-2);
+  line-height: 1.6;
+}
+.suite-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--accent); margin-top: 14px;
+  transition: opacity .15s;
+}
+.suite-link:hover { opacity: .7; }
+
+/* ── CTA ────────────────────────────────────────────────────────── */
+.cta { padding: 112px 0; text-align: center; }
+.cta h2 { margin-bottom: 16px; }
+.cta .prose { margin-bottom: 40px; }
+.cta-btns { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+/* ── FOOTER ─────────────────────────────────────────────────────── */
+footer { border-top: 1px solid var(--border); padding: 32px 0; }
+.foot-i {
+  max-width: 1000px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.foot-logo { font-family: var(--mono); font-size: 13px; color: var(--text-3); }
+.foot-links { display: flex; gap: 24px; }
+.foot-a { font-size: 13px; color: var(--text-3); transition: color .15s; }
+.foot-a:hover { color: var(--text-2); }
+.foot-copy { font-family: var(--mono); font-size: 11px; color: var(--text-3); }
+
+/* ── REVEAL ─────────────────────────────────────────────────────── */
+.r { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+.r.in { opacity: 1; transform: none; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .stats-g { grid-template-columns: 1fr 1fr; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
+  .stat:nth-child(odd) { border-right: 1px solid var(--border); }
+  .stat:last-child, .stat:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+  .pipe-step { grid-template-columns: 1fr; gap: 4px; }
+  .pipe-n { display: none; }
+  .src-grid { grid-template-columns: 1fr; }
+  .bf-row { grid-template-columns: 1fr; }
+  .bf-label { border-right: none; border-bottom: 1px solid var(--border); }
+  .delivery-g { grid-template-columns: 1fr; }
+  .suite-g { grid-template-columns: 1fr 1fr; }
+  .nav-r .nav-a { display: none; }
+  .foot-links { display: none; }
+  .hero { padding: 80px 0 72px; }
+}
+@media (max-width: 480px) {
+  .suite-g { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-i">
+    <a href="https://sportmind.dev" class="logo">
+      <div class="logo-dot"></div>
+      sportmind
+      <span class="logo-sep">/</span>
+      <span class="logo-sub">intelligence-agent</span>
+    </a>
+    <div class="nav-r">
+      <a href="#how-it-works" class="nav-a">How it works</a>
+      <a href="#sources" class="nav-a">Sources</a>
+      <a href="#briefing" class="nav-a">Briefing format</a>
+      <a href="https://github.com/SportMind/intelligence-agent" class="nav-gh" target="_blank" rel="noopener">GitHub ↗</a>
+      <button class="th" id="th" aria-label="Toggle theme">◐</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="w">
+  <section class="hero r">
+    <div class="badge">
+      <div class="badge-dot"></div>
+      SportMind suite &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; v1.1.0
+    </div>
+    <h1>Intelligence briefing<br><strong>for SportMind</strong></h1>
+    <p class="sub">
+      Monitors public sources. Classifies signals.
+      Delivers reasoned briefings. You decide what
+      gets added to the library.
+    </p>
+    <div class="btns">
+      <a href="https://github.com/SportMind/intelligence-agent" class="btn-p" target="_blank" rel="noopener">Fork on GitHub</a>
+      <a href="#how-it-works" class="btn-s">How it works</a>
+    </div>
+  </section>
+</div>
+
+<!-- STATS -->
+<div class="stats r">
+  <div class="ww">
+    <div class="stats-g">
+      <div class="stat">
+        <div class="stat-n">5</div>
+        <div class="stat-l">Source categories</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">3</div>
+        <div class="stat-l">Delivery options</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">0</div>
+        <div class="stat-l">Autonomous commits</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">0</div>
+        <div class="stat-l">Paid dependencies</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="w">
+  <section class="sec r" id="how-it-works">
+    <p class="sec-tag">Agent reasoning chain</p>
+    <h2>Five steps. Full transparency.</h2>
+    <p class="prose">
+      Every run follows the same pipeline. Every decision is logged.
+      The briefing you receive shows exactly what was found, why it was
+      classified, and what to do about it.
+    </p>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-n">01</div>
+        <div class="pipe-name">Monitor <span class="pipe-arrow">→</span></div>
+        <div class="pipe-desc">Fetches new content from all enabled sources since the last run — RSS feeds, public APIs, Telegram public channels, and the GitHub API. Source fetch failures are logged and skipped; the run continues.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-n">02</div>
+        <div class="pipe-name">Filter <span class="pipe-arrow">→</span></div>
+        <div class="pipe-desc">Two-pass keyword filter per source category. Inclusion keywords must match; suppression rules discard routine price updates, match results, and duplicates within the 7-day dedup window. Every decision is logged for audit.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-n">03</div>
+        <div class="pipe-name">Classify <span class="pipe-arrow">→</span></div>
+        <div class="pipe-desc">The LLM classifies each filtered signal as Tier 1 (primary — confirmed, modifier-changing, actionable within 30 days), Tier 2 (corroborating — credible, directionally consistent), or Tier 3 (background context). Signals with no SportMind file mapping enter a PENDING_MAPPING queue — surfacing library gaps, not hiding them.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-n">04</div>
+        <div class="pipe-name">Map to SportMind files <span class="pipe-arrow">→</span></div>
+        <div class="pipe-desc">Every classified signal is mapped to specific SportMind files and modifier identifiers. A Tier 1 signal always names the exact file, section, and proposed edit. Generic signals with no clear library mapping are filtered before delivery.</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-n">05</div>
+        <div class="pipe-name">Deliver briefing</div>
+        <div class="pipe-desc">Items are assembled into a structured briefing — Tier 1 first, then Tier 2, Tier 3 summary table, pending mapping. Delivered as a GitHub Issue in SportMind/SportMind by default. Telegram and email also supported. The agent never commits to the library autonomously.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SOURCES -->
+<div class="w">
+  <section class="sec r" id="sources">
+    <p class="sec-tag">Source monitoring</p>
+    <h2>Public sources only.</h2>
+    <p class="prose">
+      Every source is publicly accessible, RSS or API-based, and ToS-compliant.
+      No paywalled content. No scraping. No ToS violations.
+    </p>
+    <div class="src-grid">
+      <div class="src-card">
+        <div class="src-cat">Regulatory</div>
+        <div class="src-title">Rule changes that affect the library</div>
+        <div class="src-examples">
+          <div class="src-ex">CoinDesk — Regulation RSS</div>
+          <div class="src-ex">SEC EDGAR full-text search API</div>
+          <div class="src-ex">CFTC press releases RSS</div>
+          <div class="src-ex">ESMA — MiCA implementation</div>
+          <div class="src-ex">UK FCA crypto assets RSS</div>
+        </div>
+      </div>
+      <div class="src-card">
+        <div class="src-cat">Chiliz Ecosystem</div>
+        <div class="src-title">Protocol, platform, and partnership signals</div>
+        <div class="src-examples">
+          <div class="src-ex">Chiliz blog (Medium RSS)</div>
+          <div class="src-ex">Socios.com blog (Medium RSS)</div>
+          <div class="src-ex">Chiliz Chain block explorer API</div>
+          <div class="src-ex">CoinGecko fan token market API</div>
+          <div class="src-ex">Chiliz GitHub public events</div>
+        </div>
+      </div>
+      <div class="src-card">
+        <div class="src-cat">Sports Calendar</div>
+        <div class="src-title">Fixtures, transfer windows, supply triggers</div>
+        <div class="src-examples">
+          <div class="src-ex">ESPN UCL fixtures API</div>
+          <div class="src-ex">Transfermarkt RSS</div>
+          <div class="src-ex">BBC Sport RSS</div>
+          <div class="src-ex">Formula 1 official RSS</div>
+          <div class="src-ex">UEFA and FIFA news feeds</div>
+        </div>
+      </div>
+      <div class="src-card">
+        <div class="src-cat">Macro Crypto</div>
+        <div class="src-title">Cycle signals and market structure shifts</div>
+        <div class="src-examples">
+          <div class="src-ex">CoinGecko global market API</div>
+          <div class="src-ex">CoinDesk Markets RSS</div>
+          <div class="src-ex">Binance announcements RSS</div>
+          <div class="src-ex">The Block RSS</div>
+          <div class="src-ex">Bitcoin Magazine RSS</div>
+        </div>
+      </div>
+      <div class="src-card">
+        <div class="src-cat">Fan Token Specific</div>
+        <div class="src-title">Burns, mints, launches, and listings</div>
+        <div class="src-examples">
+          <div class="src-ex">CoinGecko fan tokens by volume</div>
+          <div class="src-ex">Socios Telegram public channel</div>
+          <div class="src-ex">Chiliz explorer token events</div>
+          <div class="src-ex">CoinMarketCap fan token category</div>
+          <div class="src-ex">SportMind/SportMind issue labels</div>
+        </div>
+      </div>
+      <div class="src-card" style="display:flex;align-items:center;justify-content:center;background:var(--bg-2);">
+        <div style="text-align:center;">
+          <div style="font-family:var(--mono);font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Contribute</div>
+          <div style="font-size:13px;color:var(--text-2);line-height:1.65;margin-bottom:16px;">Add a public source that maps<br>to a SportMind file. PR welcome.</div>
+          <a href="https://github.com/SportMind/intelligence-agent/blob/main/CONTRIBUTING.md" class="btn-s" target="_blank" rel="noopener" style="font-size:12px;padding:8px 16px;">Read CONTRIBUTING →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- BRIEFING FORMAT -->
+<div class="w">
+  <section class="sec r" id="briefing">
+    <p class="sec-tag">Briefing format</p>
+    <h2>Every item. Seven fields.</h2>
+    <p class="prose">
+      Tier 1 signals always include all seven fields.
+      Every claim is traceable to its source.
+      Every recommended change names a specific SportMind file and section.
+    </p>
+    <div class="briefing-box">
+      <div class="briefing-bar">
+        <span class="briefing-bar-l">intelligence-agent · briefing item · worked example</span>
+        <span class="briefing-bar-r">Tier 1 — Primary Signal</span>
+      </div>
+      <div class="briefing-body">
+        <div class="bf-row">
+          <div class="bf-label">SOURCE</div>
+          <div class="bf-val">
+            CoinDesk — Regulation<br>
+            <span class="file">coindesk.com/policy/2026/05/04/cftc-no-action-fan-tokens</span><br>
+            <span class="file">Published: 2026-05-04T16:44:00Z</span>
+          </div>
+        </div>
+        <div class="bf-row">
+          <div class="bf-label">SIGNAL</div>
+          <div class="bf-val">The US CFTC issued a no-action letter confirming that CHZ-paired fan tokens on Chiliz Chain do not constitute commodity futures contracts, provided four conditions are met. The letter applies to all currently listed tokens and remains in effect unless revoked with 30 days notice.</div>
+        </div>
+        <div class="bf-row">
+          <div class="bf-label">TIER</div>
+          <div class="bf-val"><span class="accent">Tier 1 — Primary Signal</span></div>
+        </div>
+        <div class="bf-row">
+          <div class="bf-label">AFFECTS</div>
+          <div class="bf-val">
+            <span class="file">macro/sec-cftc-overview.md</span> — modifier: <span class="accent">us_cftc_posture</span><br>
+            <span class="file">fan-token/regulatory-risk-layer.md</span> — modifier: <span class="accent">us_retail_access_risk</span><br>
+            <span class="file">macro/regulatory-frameworks.md</span> — modifier: <span class="accent">us_regulatory_clarity_score</span>
+          </div>
+        </div>
+        <div class="bf-row">
+          <div class="bf-label">REASON TO ADD</div>
+          <div class="bf-val">Confirmed official action from a primary regulatory authority. Materially changes the US regulatory risk profile for all Chiliz Chain fan tokens. Actionable immediately and durable unless explicitly revoked.</div>
+        </div>
+        <div class="bf-row">
+          <div class="bf-label">RECOMMENDED CHANGE</div>
+          <div class="bf-val">In <span class="file">macro/sec-cftc-overview.md</span> Section 4, add subsection <span class="strong">4.3 — No-Action Letter: CHZ Fan Tokens (May 2026)</span>. Update <span class="accent">us_cftc_posture</span> from <span class="accent">NEUTRAL</span> to <span class="accent">FAVOURABLE — NO ACTION ACTIVE</span>. In <span class="file">fan-token/regulatory-risk-layer.md</span> Section 2.1, downgrade US retail access risk from <span class="accent">HIGH</span> to <span class="accent">MEDIUM</span>.</div>
+        </div>
+        <div class="bf-row">
+          <div class="bf-label">VALUE ADDED</div>
+          <div class="bf-val">Removes the most significant blocker from US market expansion signals for fan tokens. Agent analyses targeting the US market can now apply <span class="accent">us_regulatory_clear ×1.15</span> rather than flagging US access as a high-risk unknown.</div>
+        </div>
+      </div>
+      <div class="briefing-foot">
+        <span>T1-REG-20260505-001</span>
+        <span>intelligence-agent v1.1.0</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- DELIVERY OPTIONS -->
+<div class="w">
+  <section class="sec r" id="delivery">
+    <p class="sec-tag">Delivery</p>
+    <h2>Three ways to receive the briefing.</h2>
+    <p class="prose">
+      Choose the method that fits your workflow.
+      GitHub Issue is the default — auditable, searchable, zero extra infrastructure.
+    </p>
+    <div class="delivery-g">
+      <div class="del-card recommended">
+        <div class="del-badge">Recommended</div>
+        <span class="del-icon">⬡</span>
+        <div class="del-name">GitHub Issue</div>
+        <div class="del-desc">Opens an Issue in SportMind/SportMind titled <em>SportMind Intelligence Briefing — [date]</em>. Full briefing in Markdown. Labels applied automatically. Searchable across repository history.</div>
+        <div class="del-detail">Requires SPORTMIND_GH_TOKEN secret</div>
+      </div>
+      <div class="del-card">
+        <span class="del-icon">✈</span>
+        <div class="del-name">Telegram</div>
+        <div class="del-desc">Sends formatted messages to a private channel or group. Tier 1 signals can be delivered immediately on detection — push mode — without waiting for the scheduled run.</div>
+        <div class="del-detail">Requires TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID</div>
+      </div>
+      <div class="del-card">
+        <span class="del-icon">◻</span>
+        <div class="del-name">Email digest</div>
+        <div class="del-desc">Sends an HTML email on schedule. Tier 1 signals highlighted. Subject line includes tier counts so you can triage from your inbox. Good for non-technical stakeholders.</div>
+        <div class="del-detail">Requires SMTP credentials</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SUITE -->
+<div class="ww">
+  <section class="sec r" id="suite">
+    <p class="sec-tag">The SportMind suite</p>
+    <h2>Four repositories. One system.</h2>
+    <p class="prose">
+      Each repository in the suite is standalone and forkable.
+      Together they cover the full stack — from raw intelligence primitives
+      to live agent interfaces to briefing delivery.
+    </p>
+    <div class="suite-g">
+      <div class="suite-card">
+        <div class="suite-n">Repository 01</div>
+        <div class="suite-name">SportMind/SportMind</div>
+        <div class="suite-desc">The core library. 456 skill files. 126 calibration records. 96% direction accuracy. The intelligence primitive set every other repository builds on.</div>
+        <a href="https://sportmind.dev" class="suite-link" target="_blank" rel="noopener">sportmind.dev ↗</a>
+      </div>
+      <div class="suite-card">
+        <div class="suite-n">Repository 02</div>
+        <div class="suite-name">SportMind/wallet-kit</div>
+        <div class="suite-desc">Fan token wallet starter kit. Connects to the Chiliz Chain. Reads balances, tracks supply events, surfaces gamified tokenomics signals in a live interface.</div>
+        <a href="https://github.com/SportMind/wallet-kit" class="suite-link" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <div class="suite-card">
+        <div class="suite-n">Repository 03</div>
+        <div class="suite-name">SportMind/telegram-kit</div>
+        <div class="suite-desc">Telegram bot starter kit. Delivers SportMind signals to a private channel. Configurable thresholds. Tier 1 push alerts. Works alongside this repository.</div>
+        <a href="https://github.com/SportMind/telegram-kit" class="suite-link" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+      <div class="suite-card current">
+        <div class="suite-n">Repository 04 — This repository</div>
+        <div class="suite-name">SportMind/intelligence-agent</div>
+        <div class="suite-desc">Monitors public sources. Classifies signals against the three-tier intake framework. Delivers structured briefings. You decide what enters the library.</div>
+        <a href="https://github.com/SportMind/intelligence-agent" class="suite-link" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CTA -->
+<div class="w">
+  <section class="cta r">
+    <h2>Fork it. Point it.<br>Read it.</h2>
+    <p class="prose">MIT licensed. Works with any LLM.<br>Zero autonomous commits. You stay in control.</p>
+    <div class="cta-btns">
+      <a href="https://github.com/SportMind/intelligence-agent" class="btn-p" target="_blank" rel="noopener">Fork on GitHub →</a>
+      <a href="https://github.com/SportMind/intelligence-agent/blob/main/README.md" class="btn-s" target="_blank" rel="noopener">Read the README</a>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-i">
+    <div class="foot-logo">sportmind / intelligence-agent</div>
+    <div class="foot-links">
+      <a href="https://github.com/SportMind/intelligence-agent" class="foot-a" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/SportMind/intelligence-agent/blob/main/CHANGELOG.md" class="foot-a" target="_blank" rel="noopener">Changelog</a>
+      <a href="https://github.com/SportMind/intelligence-agent/blob/main/CONTRIBUTING.md" class="foot-a" target="_blank" rel="noopener">Contribute</a>
+      <a href="https://github.com/SportMind/intelligence-agent/blob/main/LICENSE" class="foot-a" target="_blank" rel="noopener">MIT License</a>
+      <a href="https://sportmind.dev" class="foot-a">sportmind.dev</a>
+    </div>
+    <div class="foot-copy">© 2026 SportMind — Pele Roberts</div>
+  </div>
+</footer>
+
+<script>
+// THEME
+const T = ['system','light','dark'];
+const I = { system:'◐', light:'○', dark:'●' };
+function r(t) { return t==='system' ? (matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light') : t; }
+function apply(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.documentElement.setAttribute('data-r', r(t));
+  document.getElementById('th').textContent = I[t];
+  localStorage.setItem('smt', t);
+}
+apply(localStorage.getItem('smt') || 'system');
+document.getElementById('th').addEventListener('click', () => {
+  const c = document.documentElement.getAttribute('data-theme') || 'system';
+  apply(T[(T.indexOf(c)+1) % T.length]);
+});
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change', () => {
+  if (document.documentElement.getAttribute('data-theme')==='system') apply('system');
+});
+
+// REVEAL
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    io.unobserve(e.target);
+  });
+}, { threshold: 0.07 });
+document.querySelectorAll('.r').forEach(el => io.observe(el));
+
+// SMOOTH SCROLL
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>

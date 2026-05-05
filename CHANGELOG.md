@@ -2,6 +2,14 @@
 
 ---
 
+## [1.1.0] — 2026-05-05
+
+### Added
+
+- `index.html` — GitHub Pages site. Matches the design language of the SportMind suite (Geist/Geist Mono, identical CSS tokens, component patterns, theme toggle, scroll reveal). Sections: hero, stats bar, How it works (five-step pipeline), Sources (five category cards), Briefing format (worked example — all seven fields), Delivery options (GitHub Issue / Telegram / Email), SportMind Suite (four-column repository overview), CTA, footer.
+
+---
+
 ## [1.0.1] — 2026-05-05
 
 ### Fixed
@@ -29,11 +37,11 @@
 
 ### Architecture decisions
 
-- **No external dependencies beyond `requests` and `python-dateutil`** — consistent with SportMind zero-dependency ethos
-- **GitHub Issue as default delivery** — searchable, auditable public record, zero infrastructure beyond a PAT
-- **PENDING_MAPPING as a first-class state** — unmapped signals surface library gaps rather than being silently discarded
-- **LLM-agnostic prompt design** — works with any instruction-following model
-- **Dedup window default of 7 days** — prevents repeat noise while allowing genuine new developments through
+- No external dependencies beyond `requests` and `python-dateutil`
+- GitHub Issue as default delivery — searchable, auditable public record, zero infrastructure beyond a PAT
+- PENDING_MAPPING as a first-class state — unmapped signals surface library gaps rather than being silently discarded
+- LLM-agnostic prompt design — works with any instruction-following model
+- Dedup window default of 7 days
 
 ---
 
