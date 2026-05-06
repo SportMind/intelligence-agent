@@ -2,6 +2,42 @@
 
 ---
 
+## [1.2.0] — 2026-05-06
+
+### Fixed — website (index.html)
+
+- Removed badge line (`Open source · MIT License · vX.X.X`) from hero section — version references belong in footer/changelog only
+- Removed `Pele Roberts` from footer copyright — now reads `© 2026 SportMind`
+- Added working mobile hamburger menu — drawer opens/closes with ☰/✕ toggle, closes on link click and outside click, aria-expanded state managed correctly
+- All touch targets raised to 44px minimum — nav buttons, theme toggle, CTA buttons, footer links, suite links
+- Added `overflow-x: hidden` to body — eliminates horizontal scroll on all viewports
+- Added `overflow-x: auto` to `.bf-val` — briefing code fields scroll within container, no layout break
+- Added 768px tablet breakpoint — delivery grid 2-column, pipeline grid adjusted, `.ww` padding corrected
+- Added 480px small mobile breakpoint — suite cards stack to single column, buttons full-width, padding tightened
+- All font sizes use `clamp()` — h1, h2, .sub, .prose, .stat-n scale correctly across all viewports
+- Stats grid, suite cards, source cards, pipeline steps, briefing rows all collapse correctly on mobile
+- Suite section correctly identified as Repository 04 (fourth in suite, not fifth)
+- Footer wraps correctly on mobile with `flex-wrap: wrap`
+- Nav links hidden on mobile with hamburger visible, GitHub link in drawer
+
+### Fixed — repository files
+
+- `CHANGELOG.md` — updated with v1.2.0 entry
+
+### Verified correct (no change needed)
+
+- All nav links present and working: How it works, Sources, Briefing format, GitHub ↗
+- Logo links to sportmind.dev correctly
+- Theme toggle present and functional (system/light/dark cycle)
+- All footer links correct — GitHub, Changelog, Contribute, MIT License, sportmind.dev
+- sportmind.dev link in footer points correctly
+- All four suite repositories represented in suite section
+- `Chiliz ecosystem` retained as source category name (refers to the Chiliz ecosystem, not SportMind suite — correct)
+- GitHub Pages URL correct: `https://sportmind.github.io/intelligence-agent`
+- `LICENSE` — MIT, standard attribution retained (industry convention for open source)
+
+---
+
 ## [1.1.0] — 2026-05-05
 
 ### Added
@@ -34,14 +70,6 @@
 - `examples/github-actions-workflow.yml` — Drop-in GitHub Actions workflow. Weekly full briefing + optional daily monitoring job. Manual trigger with inputs. Full secrets documentation.
 - `CONTRIBUTING.md` — Ground rules, step-by-step for adding sources, extending classification, adding delivery options, submitting example briefings.
 - `LICENSE` — MIT
-
-### Architecture decisions
-
-- No external dependencies beyond `requests` and `python-dateutil`
-- GitHub Issue as default delivery — searchable, auditable public record, zero infrastructure beyond a PAT
-- PENDING_MAPPING as a first-class state — unmapped signals surface library gaps rather than being silently discarded
-- LLM-agnostic prompt design — works with any instruction-following model
-- Dedup window default of 7 days
 
 ---
 
